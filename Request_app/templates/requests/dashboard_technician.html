@@ -1,0 +1,86 @@
+{% extends "master.html" %}
+{% load static %}
+{% block title %}Technician Dashboard{% endblock %}
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Welcome, {{ request.user.username|title }}</h2>
+            <small class="text-muted">Manage your assigned maintenance tasks efficiently.</small>
+        </div>
+
+        <div class="d-flex align-items-center">
+
+          
+            <div class="dropdown">
+                <a class="dropdown-toggle text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-user-circle fa-2x text-secondary"></i>
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li> <a class="dropdown-item" href="{% url 'profile' %}">
+                            <i class="fas fa-user me-2"></i> Profile
+                        </a></li>
+                    <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <a class="dropdown-item text-danger" href="#" onclick="confirmLogout(event)">
+                            <i class="fas fa-sign-out-alt me-2"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Technician Cards -->
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <a href="#" class="text-decoration-none">
+                <div class="card shadow-sm text-center p-4">
+                    <i class="fas fa-tools fa-2x text-primary mb-3"></i>
+                    <h5 class="fw-bold">Assigned Tasks</h5>
+                    <p class="text-muted">View all pending and new tasks assigned to you.</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a href="#" class="text-decoration-none">
+                <div class="card shadow-sm text-center p-4">
+                    <i class="fas fa-sync-alt fa-2x text-warning mb-3"></i>
+                    <h5 class="fw-bold">Update Progress</h5>
+                    <p class="text-muted">Update status for each task you’re working on.</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a href="#" class="text-decoration-none">
+                <div class="card shadow-sm text-center p-4">
+                    <i class="fas fa-check-circle fa-2x text-success mb-3"></i>
+                    <h5 class="fw-bold">Completed Tasks</h5>
+                    <p class="text-muted">See your successfully completed maintenance jobs.</p>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    function confirmLogout(event) {
+        event.preventDefault();  // stop the default link click
+
+        if (confirm("Are you sure you want to logout?")) {
+            window.location.href = "{% url 'logout' %}";
+        }
+    }
+</script>
+
+{% endblock %}

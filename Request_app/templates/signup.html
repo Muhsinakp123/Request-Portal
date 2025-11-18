@@ -1,0 +1,20 @@
+{% extends "master.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+<div class="card">
+
+    <h3>Create an Account</h3>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn-primary">Sign Up</button>
+    </form>
+
+    <p class="text-center mt-3">
+        Already have an account?
+        <a href="{% url 'login' %}">Login</a>
+    </p>
+
+</div>
+{% endblock %}

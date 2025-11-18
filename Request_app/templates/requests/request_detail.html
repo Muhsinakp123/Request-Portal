@@ -1,0 +1,97 @@
+{% extends "master.html" %}
+{% load static %}
+{% block title %}My Requests{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">My Requests</h2>
+            <small class="text-muted">View and manage your maintenance requests.</small>
+        </div>
+
+        <a href="{% url 'employee_dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Requests Table -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            {% if requests %}
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Date Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for r in requests %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ r.title }}</td>
+                            <td>{{ r.description }}</td>
+                            <td>{{ r.category }}</td>
+
+                            <!-- Status Badge -->
+                            <td>
+                                {% if r.status|upper == 'PENDING' %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                {% elif r.status|upper == 'IN_PROCESS' %}
+                                    <span class="badge bg-info text-dark">In Process</span>
+                                {% elif r.status|upper == 'COMPLETED' %}
+                                    <span class="badge bg-success">Completed</span>
+                                {% elif r.status|upper == 'CANCELLED' %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Unknown</span>
+                                {% endif %}
+                            </td>
+
+                            <td>{{ r.created_at|date:"M d, Y H:i" }}</td>
+
+                            <!-- Actions -->
+                            <td class="text-nowrap">
+
+                                {% if r.status|upper == 'PENDING' %}
+                                    <a href="{% url 'update_request' r.id %}" class="btn btn-sm btn-warning mb-1">
+                                        <i class="fas fa-edit"></i> Update
+                                    </a>
+
+                                    <a href="{% url 'delete_request' r.id %}"
+                                       class="btn btn-sm btn-danger mb-1"
+                                       onclick="return confirm('Are you sure you want to delete this request?');">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </a>
+                                {% endif %}
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% else %}
+                <p class="text-center text-muted py-5">
+                    No requests found.<br>
+                    <a href="{% url 'create_requests' %}">Submit your first maintenance request.</a>
+                </p>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

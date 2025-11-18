@@ -1,0 +1,12 @@
+{% extends "master.html" %}
+{% block content %}
+<div class="card p-4 shadow-sm">
+  <h3>Create Request</h3>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary">Submit Request</button>
+    <a href="{% url 'employee_dashboard' %}" class="btn btn-link">Back to Dashboard</a>
+  </form>
+</div>
+{% endblock %}

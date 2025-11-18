@@ -1,0 +1,73 @@
+{% extends "master.html" %}
+{% block title %}Manage Requests{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <h2 class="mb-4">Manage Requests</h2>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Request ID</th>
+                    <th>Title</th>
+                    <th>Created By</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for req in requests %}
+                <tr>
+                    <td>{{ req.request_id }}</td>
+                    <td>{{ req.title }}</td>
+                    <td>{{ req.created_by.username }}</td>
+                    <td>
+                        {% if req.assigned_to %}
+                            {{ req.assigned_to.username }}
+                        {% else %}
+                            <span class="text-danger">Not Assigned</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ req.status|title }}</td>
+
+                    <td>
+                        <form method="POST" class="d-flex gap-2">
+                            {% csrf_token %}
+                            <input type="hidden" name="req_id" value="{{ req.id }}">
+
+                            <!-- Assign technician -->
+                            <select name="technician" class="form-select">
+                                <option value="">Assign Technician</option>
+                                {% for t in technicians %}
+                                    <option value="{{ t.id }}"
+                                        {% if req.assigned_to and req.assigned_to.id == t.id %}selected{% endif %}
+                                    >
+                                        {{ t.username }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+
+                            <!-- Status Update -->
+                            <select name="status" class="form-select">
+                                <option value="">Change Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="resolved">Resolved</option>
+                            </select>
+
+                            <button class="btn btn-primary btn-sm">Update</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% if data %}
+<div class="table-responsive">
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>NO</th>
+                <th>Request ID</th>
+                <th>Title</th>
+                <th>Created By</th>
+                <th>Assigned To</th>
+                <th>Resolved Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for req in data %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ req.request_id }}</td>
+                <td>{{ req.title }}</td>
+                <td>{{ req.created_by.username }}</td>
+                <td>{{ req.assigned_to.username }}</td>
+                <td>{{ req.updated_at|date:'M d, Y H:i' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="text-muted">No resolved requests found.</p>
+{% endif %}
