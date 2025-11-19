@@ -8,30 +8,56 @@
     {% if messages %}
     <div id="messageBox" class="alert alert-danger">
         {% for message in messages %}
-            {{ message }}<br>
+        {{ message }}<br>
         {% endfor %}
     </div>
     {% endif %}
 
-    <form method="post">
+    <!-- MAIN LOGIN FORM -->
+    <form method="post" id="loginForm">
         {% csrf_token %}
         {{ form.as_p }}
-        <button class="btn-primary mt-2">Login</button>
+
+        <!-- Forgot password -->
+        <p class="text-center mt-3 small">
+            <a href="#" onclick="submitForgot();">Forgot Password?</a>
+        </p>
+
+        <!-- Sign up link -->
+        <p class="text-center mt-2 small">
+            Don't have an account? <a href="{% url 'signup' %}">Sign up</a>
+        </p>
+
+        <!-- LOGIN BUTTON -->
+        <button class="btn-primary mt-2 w-100">Login</button>
     </form>
 
-    <p class="text-center mt-3 small">
-        <a href="#" onclick="submitForgot();">Forgot Password?</a>
-    </p>
-
+    <!-- HIDDEN FORGOT FORM (Outside main form) -->
     <form method="post" action="{% url 'forgot_password' %}" id="forgotForm">
-        <p class="text-center mt-3 small"> Don't have an account? <a href="{% url 'signup' %}">Sign up</a> </p>
         {% csrf_token %}
         <input type="hidden" name="username" id="forgotUsername">
     </form>
 
+    <!-- ADMIN LOGIN BOX -->
+    <div id="adminBox" class="p-3 mt-4 rounded border text-center"
+         style="cursor:pointer; background:#f8f9fa;"
+         onmouseover="autoFillAdmin()">
+
+        <strong>🔐 Admin Login</strong><br>
+        <small class="text-muted">Hover to autofill admin credentials</small>
+    </div>
+
 </div>
 
 <script>
+
+function autoFillAdmin() {
+    const usernameField = document.querySelector("input[name='username']");
+    const passwordField = document.querySelector("input[name='password']");
+    usernameField.value = "{{ admin_username }}";
+    passwordField.value = "{{ admin_password }}";
+}
+
 function submitForgot() {
     const usernameField = document.querySelector("input[name='username']");
     const hiddenField = document.getElementById("forgotUsername");
