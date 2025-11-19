@@ -1,0 +1,39 @@
+{% extends "master.html" %}
+{% block title %}Completed Tasks{% endblock %}
+{% block content %}
+
+<div class="container py-4">
+    <h2 class="fw-bold mb-4">Completed Tasks</h2>
+
+    {% if tasks %}
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Completed On</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.request_id }}</td>
+                    <td>{{ task.category }}</td>
+                    <td>{{ task.description }}</td>
+                    <td>{{ task.updated_at|date:"M d, Y H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+    {% else %}
+        <p class="text-muted">No completed tasks found.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

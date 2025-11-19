@@ -293,3 +293,36 @@ def reports(request):
     }
 
     return render(request, "requests/reports.html", context)
+
+@login_required
+def assigned_tasks(request):
+    technician = request.user
+    tasks = MaintenanceRequest.objects.filter(
+        assigned_to=technician,
+        status__in=["Pending", "In Progress"]
+    )
+
+    return render(request, "technician/assigned_tasks.html", {"tasks": tasks})
+
+@login_required
+def update_progress(request, pk):
+    task = MaintenanceRequest.objects.get(id=pk)
+
+    if request.method == "POST":
+        new_status = request.POST.get("status")
+        task.status = new_status
+        task.save()
+        return redirect("assigned_tasks")
+
+    return render(request, "technician/update_progress.html", {"task": task})
+
+@login_required
+def completed_tasks(request):
+    technician = request.user
+    tasks = MaintenanceRequest.objects.filter(
+        assigned_to=technician,
+        status="Resolved"
+    )
+
+    return render(request, "technician/completed_tasks.html", {"tasks": tasks})
+

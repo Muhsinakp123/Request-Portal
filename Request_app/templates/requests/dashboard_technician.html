@@ -14,7 +14,7 @@
 
         <div class="d-flex align-items-center">
 
-          
+
             <div class="dropdown">
                 <a class="dropdown-toggle text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
                     <i class="fas fa-user-circle fa-2x text-secondary"></i>
@@ -24,8 +24,10 @@
                     <li> <a class="dropdown-item" href="{% url 'profile' %}">
                             <i class="fas fa-user me-2"></i> Profile
                         </a></li>
-                    <li><hr class="dropdown-divider"></li>
-                      <li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
                         <a class="dropdown-item text-danger" href="#" onclick="confirmLogout(event)">
                             <i class="fas fa-sign-out-alt me-2"></i> Logout
                         </a>
@@ -40,7 +42,7 @@
     <div class="row g-4">
 
         <div class="col-md-4">
-            <a href="#" class="text-decoration-none">
+            <a href="{% url 'assigned_tasks' %}" class="text-decoration-none">
                 <div class="card shadow-sm text-center p-4">
                     <i class="fas fa-tools fa-2x text-primary mb-3"></i>
                     <h5 class="fw-bold">Assigned Tasks</h5>
@@ -50,17 +52,18 @@
         </div>
 
         <div class="col-md-4">
-            <a href="#" class="text-decoration-none">
+            <a href="{% url 'assigned_tasks' %}" class="text-decoration-none">
                 <div class="card shadow-sm text-center p-4">
                     <i class="fas fa-sync-alt fa-2x text-warning mb-3"></i>
                     <h5 class="fw-bold">Update Progress</h5>
-                    <p class="text-muted">Update status for each task you’re working on.</p>
+                    <p class="text-muted">Update status for each assigned task.</p>
                 </div>
             </a>
+
         </div>
 
         <div class="col-md-4">
-            <a href="#" class="text-decoration-none">
+            <a href="{% url 'completed_tasks' %}" class="text-decoration-none">
                 <div class="card shadow-sm text-center p-4">
                     <i class="fas fa-check-circle fa-2x text-success mb-3"></i>
                     <h5 class="fw-bold">Completed Tasks</h5>

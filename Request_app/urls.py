@@ -25,6 +25,13 @@ urlpatterns = [
     path('dashboard/admin/view-users/', views.view_users, name='view_users'),
     path('dashboard/admin/manage-requests/', views.manage_requests, name='manage_requests'),
     path('dashboard/admin/reports/', views.reports, name='reports'),
+    
+    
+    # Technician URLs
+    path('technician/assigned-tasks/', views.assigned_tasks, name='assigned_tasks'),
+    path('technician/update-progress/<int:pk>/', views.update_progress, name='update_progress'),
+    path('technician/completed-tasks/', views.completed_tasks, name='completed_tasks'),
+
 
 
 

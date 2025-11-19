@@ -1,0 +1,54 @@
+{% extends "master.html" %}
+{% block title %}Assigned Tasks{% endblock %}
+{% block content %}
+
+<div class="container py-4">
+    <h2 class="mb-4 fw-bold">Assigned Tasks</h2>
+
+    {% if tasks %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.request_id }}</td>
+                    <td>{{ task.category }}</td>
+                    <td>{{ task.description }}</td>
+                    <td>
+                        <span class="badge 
+                            {% if task.status == 'Pending' %} bg-warning
+                            {% elif task.status == 'In Progress' %} bg-info
+                            {% else %} bg-success {% endif %}">
+                            {{ task.status }}
+                        </span>
+                    </td>
+                    <td>{{ task.created_at|date:"M d, Y H:i" }}</td>
+
+                    <td>
+                        <a href="{% url 'update_progress' task.id %}" class="btn btn-primary btn-sm">
+                            Update Progress
+                        </a>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <p class="text-muted">No tasks assigned yet.</p>
+    {% endif %}
+</div>
+
+{% endblock %}
