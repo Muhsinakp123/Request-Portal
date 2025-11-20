@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome 6 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-yH8uW8Y…" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fc;
+            margin: 0;
+        }
+
+        .wrapper {
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #111827;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            padding-top: 20px;
+            color: #fff;
+        }
+
+        .sidebar a {
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #e5e7eb;
+            display: block;
+            transition: 0.3s;
+            border-radius: 6px;
+            margin: 4px 10px;
+        }
+        .sidebar a.active {
+    background-color: #0d6efd;
+    color: #fff !important;
+    font-weight: 600;
+}
+
+
+        .sidebar a:hover {
+            background: #374151;
+        }
+
+        .active {
+            background: #0d6efd !important;
+            font-weight: 600;
+        }
+
+
+        /* Main content */
+        .content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wrapper">
+
+        <!-- Sidebar -->
+        <div class="sidebar text-white">
+            <h4 class="text-center mb-4">Admin Panel</h4>
+
+            <ul class="nav flex-column">
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link d-flex align-items-center {% if active == 'dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}">
+                        <i class="fa fa-home me-2"></i> Dashboard
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link d-flex align-items-center {% if active == 'users' %}active{% endif %}" href="{% url 'view_users' %}">
+                        <i class="fa fa-users me-2"></i> View Users
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link d-flex align-items-center {% if active == 'requests' %}active{% endif %}" href="{% url 'manage_requests' %}">
+                        <i class="fa fa-tasks me-2"></i> Manage Requests
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link d-flex align-items-center {% if active == 'reports' %}active{% endif %}" href="{% url 'reports' %}">
+                        <i class="fa fa-chart-line me-2"></i> Reports
+                    </a>
+                </li>
+
+                <li>
+                    <a class="nav-link d-flex align-items-center" href="{% url 'logout' %}" onclick="confirmLogout(event)">
+                        <i class="fa fa-sign-out me-2"></i> Logout
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+    </div>
+
+<script>
+    function confirmLogout(event) {
+        event.preventDefault();
+
+        if (confirm("Are you sure you want to logout?")) {
+            window.location.href = "{% url 'logout' %}";
+        }
+    }
+</script>    
+</body>
+
+</html>

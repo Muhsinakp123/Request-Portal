@@ -130,6 +130,7 @@ def logout_view(request):
 def admin_dashboard(request):
     qs = MaintenanceRequest.objects.all()
     return render(request, 'requests/dashboard.html', {
+        'active': 'dashboard',
         'total': qs.count(),
         'pending': qs.filter(status='pending').count(),
         'in_progress': qs.filter(status='in_progress').count(),
@@ -222,6 +223,7 @@ def admin_required(view_func):
 def view_users(request):
     users = User.objects.all().order_by('-date_joined')  # latest users first
     return render(request, 'requests/view_users.html', {
+        'active': 'users',
         'users': users
     })
     
@@ -251,6 +253,7 @@ def manage_requests(request):
     return render(request, "requests/manage_requests.html", {
         "requests": requests,
         "technicians": technicians,
+        "active": "requests",
     })
     
     
@@ -290,6 +293,7 @@ def reports(request):
 
     context = {
         "requests": requests,
+        "active": "reports",
     }
 
     return render(request, "requests/reports.html", context)
