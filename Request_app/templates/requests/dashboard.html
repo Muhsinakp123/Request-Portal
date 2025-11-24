@@ -6,7 +6,9 @@
 <div class="container-fluid">
 
     <!-- Dashboard Title -->
-    <h2 class="fw-bold mb-4" style="margin-left: 0;">Dashboard Overview</h2>
+   <div class="dashboard-header mb-4">
+    <h2 class="mb-0">Dashboard Overview</h2>
+   </div>
 
     <!-- Welcome Box -->
     <div class="card shadow-sm mb-4 border-0 rounded-3 p-3">
@@ -55,5 +57,22 @@
     </div>
 
 </div>
+<style>
+.dashboard-header {
+    background: #1f2937;
+    padding: 18px 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+    width: 100%;
+}
+
+.dashboard-header h2 {
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+</style>
 
 {% endblock %}

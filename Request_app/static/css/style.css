@@ -181,3 +181,18 @@ a:hover {
     border-radius: 10px;
     box-shadow: 0px 3px 7px rgba(0,0,0,0.1);
 }
+.dashboard-header {
+    background: #1f2937;
+    padding: 18px 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+    width: 100%;
+}
+
+.dashboard-header h2 {
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+

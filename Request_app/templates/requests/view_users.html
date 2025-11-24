@@ -3,12 +3,13 @@
 
 {% block content %}
 <div class="container py-4">
-
-    <h2 class="mb-4">Registered Users</h2>
+    <div class="dashboard-header mb-4">
+        <h2 class="mb-4">Registered Users</h2>
+    </div>
 
     {% if users %}
     <div class="table-responsive">
-        <table class="table table-striped table-bordered align-middle">
+        <table class="table table-striped table-bordered align-middle text-center">
             <thead class="table-dark">
                 <tr>
                     <th>NO</th>
@@ -40,4 +41,22 @@
     {% endif %}
 
 </div>
+<style>
+.dashboard-header {
+    background: #1f2937;
+    padding: 2px 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+    width: 100%;
+}
+
+.dashboard-header h2 {
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.5px;
+    margin: 0;
+    margin-top: 12px;
+}
+
+</style>
 {% endblock %}

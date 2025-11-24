@@ -132,21 +132,24 @@ def admin_dashboard(request):
     return render(request, 'requests/dashboard.html', {
         'active': 'dashboard',
         'total': qs.count(),
-        'pending': qs.filter(status='pending').count(),
-        'in_progress': qs.filter(status='in_progress').count(),
-        'resolved': qs.filter(status='resolved').count(),
+        'pending': qs.filter(status='PENDING').count(),
+        'in_progress': qs.filter(status='IN_PROCESS').count(),
+        'resolved': qs.filter(status='COMPLETED').count(),
         'recent': qs.order_by('-created_at')[:10],
     })
+
+
 
 @login_required
 def employee_dashboard(request):
     qs = MaintenanceRequest.objects.filter(created_by=request.user)
     return render(request, 'requests/dashboard_employee.html', {
         'total': qs.count(),
-        'pending': qs.filter(status='pending').count(),
-        'resolved': qs.filter(status='resolved').count(),
+        'pending': qs.filter(status='PENDING').count(),
+        'resolved': qs.filter(status='COMPLETED').count(),
         'requests': qs.order_by('-created_at'),
     })
+
 
 @login_required
 def technician_dashboard(request):
@@ -183,7 +186,12 @@ def my_requests(request):
 
 @login_required
 def update_request(request, pk):
-    req = get_object_or_404(MaintenanceRequest, pk=pk, created_by=request.user, status='pending')
+    req = get_object_or_404(
+    MaintenanceRequest,
+    pk=pk,
+    created_by=request.user,
+    status='PENDING'
+)
     if request.method == 'POST':
         form = MaintenanceRequestForm(request.POST, instance=req)
         if form.is_valid():
@@ -196,7 +204,12 @@ def update_request(request, pk):
 
 @login_required
 def delete_request(request, pk):
-    req = get_object_or_404(MaintenanceRequest, pk=pk, created_by=request.user, status='pending')
+    req = get_object_or_404(
+    MaintenanceRequest,
+    pk=pk,
+    created_by=request.user,
+    status='PENDING'
+)
     req.delete()
     messages.success(request, "Request deleted successfully.")
     return redirect('my_requests')
