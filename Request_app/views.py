@@ -247,27 +247,51 @@ def manage_requests(request):
     technicians = User.objects.filter(profile__role='technician')
 
     if request.method == "POST":
+
+        action = request.POST.get("action")
         req_id = request.POST.get("req_id")
         tech_id = request.POST.get("technician")
-        status = request.POST.get("status")
 
         req = MaintenanceRequest.objects.get(id=req_id)
 
-        if tech_id:
-            req.assigned_to_id = tech_id
-        
-        if status:
-            req.status = status
+        # -------------------------
+        # ADMIN ACCEPT
+        # -------------------------
+        if action == "accept":
+            req.status = "ACCEPTED"
+            req.save()
 
-        req.save()
-        messages.success(request, "Request updated successfully.")
-        return redirect("manage_requests")
+            messages.success(request, "Request accepted. Now you can assign a technician.")
+            return redirect("manage_requests")
+
+        # -------------------------
+        # ADMIN REJECT
+        # -------------------------
+        elif action == "reject":
+            req.status = "REJECTED"
+            req.assigned_to = None
+            req.save()
+
+            messages.success(request, "Request rejected successfully.")
+            return redirect("manage_requests")
+
+        # -------------------------
+        # ASSIGN TECHNICIAN AFTER ACCEPT
+        # -------------------------
+        elif action == "assign" and tech_id:
+            req.assigned_to_id = tech_id
+            req.status = MaintenanceRequest.STATUS_IN_PROCESS
+            req.save()
+
+            messages.success(request, "Technician assigned. Request is now In Process.")
+            return redirect("manage_requests")
 
     return render(request, "requests/manage_requests.html", {
         "requests": requests,
         "technicians": technicians,
         "active": "requests",
     })
+
     
     
 
@@ -314,12 +338,16 @@ def reports(request):
 @login_required
 def assigned_tasks(request):
     technician = request.user
+    
     tasks = MaintenanceRequest.objects.filter(
         assigned_to=technician,
-        status__in=["Pending", "In Progress"]
+        status__in=["ACCEPTED", "IN_PROCESS"] 
     )
-
+    
     return render(request, "technician/assigned_tasks.html", {"tasks": tasks})
+
+
+
 
 @login_required
 def update_progress(request, pk):
@@ -338,8 +366,8 @@ def completed_tasks(request):
     technician = request.user
     tasks = MaintenanceRequest.objects.filter(
         assigned_to=technician,
-        status="Resolved"
+        status="COMPLETED"
     )
-
     return render(request, "technician/completed_tasks.html", {"tasks": tasks})
+
 

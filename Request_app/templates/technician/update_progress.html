@@ -16,8 +16,6 @@
 
             <label class="mt-3"><strong>Select Status:</strong></label>
             <select name="status" class="form-select mt-2" required>
-                <option value="Pending" {% if task.status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="In Progress" {% if task.status == 'In Progress' %}selected{% endif %}>In Progress</option>
                 <option value="Resolved" {% if task.status == 'Resolved' %}selected{% endif %}>Resolved</option>
             </select>
 

@@ -27,41 +27,57 @@
                     <td>{{ req.created_by.username }}</td>
                     <td>
                         {% if req.assigned_to %}
-                            {{ req.assigned_to.username }}
+                        {{ req.assigned_to.username }}
                         {% else %}
-                            <span class="text-danger">Not Assigned</span>
+                        <span class="text-danger">Not Assigned</span>
                         {% endif %}
                     </td>
                     <td>{{ req.status|title }}</td>
+<td>
+    {% if req.status == "PENDING" %}
+        <!-- Show Accept + Reject buttons -->
+        <form method="POST" class="d-flex gap-2">
+            {% csrf_token %}
+            <input type="hidden" name="req_id" value="{{ req.id }}">
 
-                    <td>
-                        <form method="POST" class="d-flex gap-2">
-                            {% csrf_token %}
-                            <input type="hidden" name="req_id" value="{{ req.id }}">
+            <button name="action" value="accept" class="btn btn-success btn-sm">
+                Accept
+            </button>
 
-                            <!-- Assign technician -->
-                            <select name="technician" class="form-select">
-                                <option value="">Assign Technician</option>
-                                {% for t in technicians %}
-                                    <option value="{{ t.id }}"
-                                        {% if req.assigned_to and req.assigned_to.id == t.id %}selected{% endif %}
-                                    >
-                                        {{ t.username }}
-                                    </option>
-                                {% endfor %}
-                            </select>
+            <button name="action" value="reject" class="btn btn-danger btn-sm">
+                Reject
+            </button>
+        </form>
 
-                            <!-- Status Update -->
-                            <select name="status" class="form-select">
-                                <option value="">Change Status</option>
-                                <option value="pending">Pending</option>
-                                <option value="in_progress">In Progress</option>
-                                <option value="resolved">Resolved</option>
-                            </select>
+    {% elif req.status == "accepted" or req.status == "ACCEPTED" %}
+        <!-- Show technician dropdown -->
+        <form method="POST" class="d-flex gap-2">
+            {% csrf_token %}
+            <input type="hidden" name="req_id" value="{{ req.id }}">
 
-                            <button class="btn btn-primary btn-sm">Update</button>
-                        </form>
-                    </td>
+            <select name="technician" class="form-select">
+                <option value="">Assign Technician</option>
+                {% for t in technicians %}
+                    <option value="{{ t.id }}"
+                        {% if req.assigned_to and req.assigned_to.id == t.id %}selected{% endif %}>
+                        {{ t.username }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button class="btn btn-primary btn-sm">Update</button>
+        </form>
+
+    {% elif req.status == "REJECTED" %}
+        <!-- Only show a dash -->
+        <span class="text-muted">—</span>
+
+    {% else %}
+        <span class="text-muted">—</span>
+    {% endif %}
+</td>
+
+
                 </tr>
                 {% endfor %}
             </tbody>
@@ -71,21 +87,20 @@
 
 </div>
 <style>
-.dashboard-header {
-    background: #1f2937;
-    padding: 2px 25px;
-    border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
-    width: 100%;
-}
+    .dashboard-header {
+        background: #1f2937;
+        padding: 2px 25px;
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
+        width: 100%;
+    }
 
-.dashboard-header h2 {
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: 0.5px;
-    margin: 0;
-    margin-top: 12px;
-}
-
+    .dashboard-header h2 {
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 0.5px;
+        margin: 0;
+        margin-top: 12px;
+    }
 </style>
 {% endblock %}
