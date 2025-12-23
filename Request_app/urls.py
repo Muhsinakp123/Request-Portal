@@ -31,6 +31,9 @@ urlpatterns = [
     path('technician/assigned-tasks/', views.assigned_tasks, name='assigned_tasks'),
     path('technician/update-progress/<int:pk>/', views.update_progress, name='update_progress'),
     path('technician/completed-tasks/', views.completed_tasks, name='completed_tasks'),
+    path("technician/accept/<int:pk>/", views.accept_task, name="accept_task"),
+    path('reject-task/<int:pk>/', views.reject_task, name='reject_task'),
+
 
 
 
