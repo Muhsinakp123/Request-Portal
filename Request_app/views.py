@@ -6,7 +6,7 @@ from .models import Profile, MaintenanceRequest
 from .forms import LoginForm, ResetPasswordForm, UserForm, MaintenanceRequestForm
 from django.contrib.auth.decorators import login_required ,user_passes_test
 from django.utils.timezone import now, timedelta,datetime
-from django.db.models import Q
+from .forms import ChangeStatusForm
 
 
 # Helper to get role
@@ -156,8 +156,8 @@ def technician_dashboard(request):
     qs = MaintenanceRequest.objects.filter(assigned_to=request.user)
     return render(request, 'requests/dashboard_technician.html', {
         'total': qs.count(),
-        'in_progress': qs.filter(status='in_progress').count(),
-        'resolved': qs.filter(status='resolved').count(),
+        'in_progress': qs.filter(status=MaintenanceRequest.STATUS_IN_PROCESS).count(),
+        'resolved': qs.filter(status=MaintenanceRequest.STATUS_COMPLETED).count(),
         'requests': qs.order_by('-created_at'),
     })
 
@@ -218,8 +218,8 @@ def delete_request(request, pk):
 def request_history(request):
     completed_requests = MaintenanceRequest.objects.filter(
         created_by=request.user,
-        status__in=['resolved']
-    ).order_by('-updated_at')
+        status=MaintenanceRequest.STATUS_COMPLETED
+        ).order_by('-updated_at')
     return render(request, 'requests/request_list.html', {'requests': completed_requests})
 
 # ------------------------ Profile ------------------------
@@ -277,7 +277,7 @@ def manage_requests(request):
 @login_required
 @admin_required
 def reports(request):
-    requests = MaintenanceRequest.objects.filter(status="Resolved").order_by('-updated_at')
+    requests = MaintenanceRequest.objects.filter(status=MaintenanceRequest.STATUS_COMPLETED).order_by('-updated_at')
 
     category = request.GET.get("category")
     filter_type = request.GET.get("filter")
@@ -317,27 +317,65 @@ def reports(request):
 @login_required
 def assigned_tasks(request):
     technician = request.user
-    
-    tasks = MaintenanceRequest.objects.filter(
-        assigned_to=technician,
-        status="PENDING"
-        )
 
-    
-    return render(request, "technician/assigned_tasks.html", {"tasks": tasks})
+    # Show only PENDING or IN_PROCESS tasks
+    tasks = MaintenanceRequest.objects.filter(
+        assigned_to=technician
+    ).exclude(status=MaintenanceRequest.STATUS_COMPLETED).order_by('-created_at')
+
+    return render(
+        request,
+        "technician/assigned_tasks.html",
+        {"tasks": tasks}
+    )
+
+
 
 
 @login_required
 def update_progress(request, pk):
-    task = MaintenanceRequest.objects.get(id=pk)
+    task = get_object_or_404(
+        MaintenanceRequest,
+        id=pk,
+        assigned_to=request.user
+    )
 
-    if request.method == "POST":
-        new_status = request.POST.get("status")
-        task.status = new_status
-        task.save()
+    if task.status == MaintenanceRequest.STATUS_PENDING:
+        messages.error(request, "Please accept the task before updating progress.")
         return redirect("assigned_tasks")
 
-    return render(request, "technician/update_progress.html", {"task": task})
+    if request.method == "POST":
+        form = ChangeStatusForm(request.POST)
+        if form.is_valid():
+            task.status = form.cleaned_data['status']
+            task.resolution_notes = form.cleaned_data['resolution_notes']
+            task.save()
+            messages.success(request, "Task updated successfully.")
+            return redirect("assigned_tasks")
+    else:
+        # Use initial values for a regular Form
+        form = ChangeStatusForm(initial={
+            'status': task.status,
+            'resolution_notes': task.resolution_notes
+        })
+
+    return render(request, "technician/update_progress.html", {
+        "task": task,
+        "form": form
+    })
+
+
+@login_required
+def update_tasks(request):
+    technician = request.user
+    # Only fetch tasks that are in progress
+    tasks = MaintenanceRequest.objects.filter(
+        assigned_to=technician,
+        status=MaintenanceRequest.STATUS_IN_PROCESS
+    ).order_by('-created_at')
+
+    return render(request, "technician/update.html", {"tasks": tasks})
+
 
 @login_required
 def completed_tasks(request):
@@ -355,14 +393,15 @@ def accept_task(request, pk):
         MaintenanceRequest,
         id=pk,
         assigned_to=request.user,
-        status="ACCEPTED"  # or PENDING based on your design
+        status=MaintenanceRequest.STATUS_PENDING
     )
 
     task.status = MaintenanceRequest.STATUS_IN_PROCESS
     task.save()
 
-    messages.success(request, "You have accepted the task. Work started.")
+    messages.success(request, "Task accepted. Work started.")
     return redirect("assigned_tasks")
+
 
 @login_required
 def reject_task(request, pk):
@@ -370,12 +409,13 @@ def reject_task(request, pk):
         MaintenanceRequest,
         id=pk,
         assigned_to=request.user,
-        status="PENDING"
+        status=MaintenanceRequest.STATUS_PENDING
     )
 
-    # Unassign the technician and keep status PENDING
     task.assigned_to = None
+    task.status = MaintenanceRequest.STATUS_PENDING
     task.save()
 
-    messages.success(request, "You have rejected the task. Admin will reassign it.")
+    messages.success(request, "Task rejected. Admin will reassign.")
     return redirect("assigned_tasks")
+

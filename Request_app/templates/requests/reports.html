@@ -3,23 +3,29 @@
 
 {% block content %}
 <div class="container py-4">
-    <div class="dashboard-header mb-4">
-        <h2 class="mb-4">Resolved Requests Report</h2>
-    </div>
-    <!-- Filters Form -->
-     <form method="GET" class="row g-3 mb-4 p-3 border rounded bg-light mt-3">
 
+    <!-- Header -->
+    <div class="dashboard-header mb-4">
+        <h2 class="mb-4">Completed Maintenance Requests Report</h2>
+    </div>
+
+    <!-- Filters Form -->
+    <form method="GET" class="row g-3 mb-4 p-3 border rounded bg-light mt-3">
+
+        <!-- Category Filter -->
         <div class="col-md-3">
             <label class="form-label">Category</label>
             <select name="category" class="form-select">
                 <option value="all">All</option>
-                <option value="software">Software</option>
-                <option value="hardware">Hardware</option>
-                <option value="network">Network</option>
-                <option value="other">Other</option>
+                <option value="ELECTRICAL">Electrical</option>
+                <option value="PLUMBING">Plumbing</option>
+                <option value="HVAC">HVAC</option>
+                <option value="IT">IT</option>
+                <option value="OTHER">Other</option>
             </select>
         </div>
 
+        <!-- Date Filter -->
         <div class="col-md-3">
             <label class="form-label">Date Filter</label>
             <select name="filter" class="form-select">
@@ -32,70 +38,84 @@
             </select>
         </div>
 
+        <!-- Start Date -->
         <div class="col-md-3">
             <label class="form-label">Start Date</label>
             <input type="date" name="start_date" class="form-control">
         </div>
 
+        <!-- End Date -->
         <div class="col-md-3">
             <label class="form-label">End Date</label>
             <input type="date" name="end_date" class="form-control">
         </div>
 
+        <!-- Submit -->
         <div class="col-md-12 text-end">
-            <button class="btn btn-primary">Apply Filters</button>
+            <button type="submit" class="btn btn-primary px-4">
+                Apply Filters
+            </button>
         </div>
     </form>
 
-    <!-- Data Table -->
+    <!-- Report Table -->
     {% if requests %}
-    <table class="table table-bordered table-striped align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th>No</th>
-                <th>Ticket ID</th>
-                <th>User</th>
-                <th>Category</th>
-                <th>Description</th>
-                <th>Assigned To</th>
-                <th>Resolved Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for r in requests %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ r.id }}</td>
-                <td>{{ r.user.username }}</td>
-                <td>{{ r.category|title }}</td>
-                <td>{{ r.description }}</td>
-                <td>{{ r.assigned_to.username }}</td>
-                <td>{{ r.updated_at|date:"M d, Y H:i" }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Request ID</th>
+                    <th>Created By</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Assigned To</th>
+                    <th>Completed On</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in requests %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ r.request_id }}</td>
+                    <td>{{ r.created_by.username }}</td>
+                    <td>{{ r.get_category_display }}</td>
+                    <td>{{ r.description }}</td>
+                    <td>
+                        {% if r.assigned_to %}
+                            {{ r.assigned_to.username }}
+                        {% else %}
+                            <span class="text-muted">Not Assigned</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ r.updated_at|date:"M d, Y H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
-    <p class="text-muted text-center">No resolved request records found.</p>
+        <p class="text-muted text-center mt-4">
+            No completed maintenance requests found.
+        </p>
     {% endif %}
 
 </div>
+
+<!-- Page Styling -->
 <style>
 .dashboard-header {
     background: #1f2937;
-    padding: 2px 25px;
+    padding: 14px 25px;
     border-radius: 12px;
     box-shadow: 0 3px 10px rgba(0,0,0,0.07);
-    width: 100%;
 }
 
 .dashboard-header h2 {
     font-weight: 700;
-    color: #fff;
+    color: #ffffff;
     letter-spacing: 0.5px;
     margin: 0;
-    margin-top: 12px;
 }
-
 </style>
 {% endblock %}

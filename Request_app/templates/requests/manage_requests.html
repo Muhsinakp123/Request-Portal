@@ -3,8 +3,10 @@
 
 {% block content %}
 <div class="container py-4">
+
+    <!-- Header -->
     <div class="dashboard-header mb-4">
-        <h2 class="mb-4">Manage Requests</h2>
+        <h2>Manage Maintenance Requests</h2>
     </div>
 
     {% if requests %}
@@ -20,37 +22,61 @@
                     <th>Action</th>
                 </tr>
             </thead>
+
             <tbody>
                 {% for req in requests %}
                 <tr>
                     <td>{{ req.request_id }}</td>
                     <td>{{ req.title }}</td>
                     <td>{{ req.created_by.username }}</td>
+
+                    <!-- Assigned Technician -->
                     <td>
                         {% if req.assigned_to %}
                             {{ req.assigned_to.username }}
                         {% else %}
-                            <span class="text-danger">Not Assigned</span>
+                            <span class="text-danger fw-semibold">Not Assigned</span>
                         {% endif %}
                     </td>
-                    <td>{{ req.status|title }}</td>
+
+                    <!-- Status Badge -->
                     <td>
                         {% if req.status == "PENDING" %}
-                        <form method="POST" class="d-flex gap-2 justify-content-center">
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        {% elif req.status == "IN_PROCESS" %}
+                            <span class="badge bg-info text-dark">In Process</span>
+                        {% elif req.status == "COMPLETED" %}
+                            <span class="badge bg-success">Completed</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Unknown</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Actions -->
+                    <td>
+                        {% if req.status == "PENDING" %}
+                        <form method="POST" class="d-flex gap-2 justify-content-center align-items-center">
                             {% csrf_token %}
                             <input type="hidden" name="req_id" value="{{ req.id }}">
-                            <select name="technician" class="form-select form-select-sm" required>
+
+                            <select name="technician" class="form-select form-select-sm w-auto" required>
                                 <option value="">Assign Technician</option>
                                 {% for t in technicians %}
-                                <option value="{{ t.id }}" {% if req.assigned_to and req.assigned_to.id == t.id %}selected{% endif %}>
+                                <option value="{{ t.id }}">
                                     {{ t.username }}
                                 </option>
                                 {% endfor %}
                             </select>
-                            <button name="action" value="assign" class="btn btn-primary btn-sm">Assign</button>
+
+                            <button type="submit"
+                                    name="action"
+                                    value="assign"
+                                    class="btn btn-primary btn-sm">
+                                Assign
+                            </button>
                         </form>
                         {% else %}
-                        <span class="text-muted">—</span>
+                            <span class="text-muted">—</span>
                         {% endif %}
                     </td>
                 </tr>
@@ -58,22 +84,29 @@
             </tbody>
         </table>
     </div>
+
     {% else %}
-    <div class="text-muted text-center">
-        🚫 No requests found
+    <div class="text-muted text-center mt-4">
+        🚫 No maintenance requests found
     </div>
     {% endif %}
 </div>
 
+<!-- Styling -->
 <style>
 .dashboard-header {
     background: #1f2937;
-    padding: 12px 25px;
+    padding: 14px 25px;
     border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
 }
+
 .dashboard-header h2 {
-    color: #fff;
+    color: #ffffff;
     font-weight: 700;
+    letter-spacing: 0.4px;
+    margin: 0;
 }
 </style>
+
 {% endblock %}

@@ -42,7 +42,8 @@
                             <td>{{ forloop.counter }}</td>
                             <td class="fw-semibold">{{ r.title }}</td>
                             <td>{{ r.description }}</td>
-                            <td>{{ r.category }}</td>
+                            <td>{{ r.get_category_display }}</td>
+
 
                             <!-- Status -->
                             <td>

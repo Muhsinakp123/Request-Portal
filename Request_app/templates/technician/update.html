@@ -1,9 +1,9 @@
 {% extends "master.html" %}
-{% block title %}Assigned Tasks{% endblock %}
+{% block title %}Update Tasks{% endblock %}
 {% block content %}
 
 <div class="container py-4">
-    <h2 class="fw-bold mb-4">My Assigned Tasks</h2>
+    <h2 class="fw-bold mb-4">Update Accepted Tasks</h2>
 
     {% if tasks %}
     <div class="table-responsive">
@@ -41,24 +41,22 @@
                     <!-- ACTIONS -->
                     <td class="text-center">
 
-                        <!-- PENDING -->
-                        {% if task.status == "PENDING" %}
-                        <a href="{% url 'accept_task' task.id %}" class="btn btn-sm btn-success me-2">
-                            Accept
+                        {% if task.status == "IN_PROCESS" %}
+                        <!-- Show Update Progress button only if task is in progress -->
+                        <a href="{% url 'update_progress' task.id %}" class="btn btn-sm btn-primary">
+                            Update Progress
                         </a>
 
-                        <a href="{% url 'reject_task' task.id %}" class="btn btn-sm btn-danger"
-                            onclick="return confirm('Are you sure you want to reject this task?');">
-                            Reject
-                        </a>
+                        {% elif task.status == "COMPLETED" %}
+                        <!-- If completed, just show ---- -->
+                        <span class="text-muted fw-semibold">----</span>
 
-                        <!-- IN PROCESS or COMPLETED -->
                         {% else %}
+                        <!-- PENDING tasks should not appear here, but as a fallback -->
                         <span class="text-muted fw-semibold">----</span>
                         {% endif %}
 
                     </td>
-
 
 
                 </tr>
