@@ -272,43 +272,55 @@ def manage_requests(request):
     })
 
     
-    
-
 @login_required
 @admin_required
 def reports(request):
-    requests = MaintenanceRequest.objects.filter(status=MaintenanceRequest.STATUS_COMPLETED).order_by('-updated_at')
+    requests_qs = MaintenanceRequest.objects.filter(
+        status=MaintenanceRequest.STATUS_COMPLETED
+    ).order_by('-updated_at')
 
-    category = request.GET.get("category")
+    category = request.GET.get("category", "all")
     filter_type = request.GET.get("filter")
     start_date = request.GET.get("start_date")
     end_date = request.GET.get("end_date")
 
-    # CATEGORY FILTER
-    if category and category != "all":
-        requests = requests.filter(category=category)
+    # ---------------- CATEGORY FILTER ----------------
+    if category != "all":
+        requests_qs = requests_qs.filter(category=category)
 
-    # DATE FILTER OPTIONS
-    today = datetime.today().date()
+    # ---------------- DATE FILTERS ----------------
+    today = now().date()
 
     if filter_type == "daily":
-        requests = requests.filter(updated_at__date=today)
+        requests_qs = requests_qs.filter(updated_at__date=today)
 
     elif filter_type == "weekly":
-        last_week = today - timedelta(days=7)
-        requests = requests.filter(updated_at__date__gte=last_week)
+        start_week = today - timedelta(days=7)
+        requests_qs = requests_qs.filter(
+            updated_at__date__gte=start_week,
+            updated_at__date__lte=today
+        )
 
     elif filter_type == "monthly":
-        requests = requests.filter(updated_at__month=today.month, updated_at__year=today.year)
+        requests_qs = requests_qs.filter(
+            updated_at__year=today.year,
+            updated_at__month=today.month
+        )
 
     elif filter_type == "yearly":
-        requests = requests.filter(updated_at__year=today.year)
+        requests_qs = requests_qs.filter(updated_at__year=today.year)
 
-    elif filter_type == "custom" and start_date and end_date:
-        requests = requests.filter(updated_at__date__range=[start_date, end_date])
+    elif start_date and end_date:
+        # ✅ Convert string → date objects
+        start = datetime.strptime(start_date, "%Y-%m-%d").date()
+        end = datetime.strptime(end_date, "%Y-%m-%d").date()
+
+        requests_qs = requests_qs.filter(
+            updated_at__date__range=(start, end)
+        )
 
     context = {
-        "requests": requests,
+        "requests": requests_qs,
         "active": "reports",
     }
 
